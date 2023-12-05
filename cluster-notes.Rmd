@@ -45,17 +45,17 @@ knitr::include_graphics("figures/defineCfgParam.png")
 
  + Also make sure that you are printing your desired output to the SLiM console. For example, if I want to analyze a gene drive's trajectory during the course of the simulation, I'd probably want to print out the generation count and the drive allele frequency at the `late()` stage of each tick. 
 
-2. Create a Python driver (ex: `python-driver.py`)
+2. Create a Python driver (ex: [python-driver.py](slim-example/python-driver.py))
   + This script should that use an [ArgumentParser](https://docs.python.org/3/library/argparse.html) to handle command line arguments, such as the parameters you want to vary in SLiM and any other variables that may change, like the number of replicates to run or the name of the SLiM file you want to use. 
- + This script will import functions from Sam's `slimutil.py` script to run SLiM with these command line arguments, then parse the output written to the SLiM console and print out your desired summary statistics.
+ + This script will import functions from Sam's [slimutil.py](slim-example/slimutil.py) script to run SLiM with these command line arguments, then parse the output written to the SLiM console and print out your desired summary statistics.
   
-3. Create a text file where each line corresponds to 1 call of your Python driver (ex: `params.txt`)
- + You can create a text file like this using for-loops in Python or R. If I wanted to vary the embryo resistance rate and the germline resistance rate on the cluster, for example, I could make a text file with these commands using the following Python code (see `gen_params.py`):
+3. Create a text file where each line corresponds to 1 call of your Python driver (ex: [params.txt](slim-example/params.txt))
+ + You can create a text file like this using for-loops in Python or R. If I wanted to vary the embryo resistance rate and the germline resistance rate on the cluster, for example, I could make a text file with these commands using the following Python code (see [gen_params.py](slim-example/gen_params.py)):
 ```{bash}
 cat slim-example/gen_params.py
 ```
   
-4. Lastly, create a SLURM script (see `slurm-script.sh`). 
+4. Lastly, create a SLURM script (see [slurm-script.sh](slim-example/slurm-script.sh)). 
   + This should start with headers that specify the memory requirements of your job, the job partition you want (which depends on how long you think the job will take), a name for your job, a name for your job's output (for standard error messages), and the length of the job array (optional).
     * You can use a job array to execute many lines of your text file simultaneously. The notation for this is `#SBATCH --array=1-<ARRAY_LENGTH>%<MAX_JOBS_AT_A_TIME>`. The `ARRAY_LENGTH` corresponds to the number of lines in my text file, ie the number of times I'm running the Python driver. The `MAX_JOBS_AT_A_TIME` controls how many jobs I can execute simultaneously. See **cluster etiquette** — `MAX_JOBS_AT_A_TIME` should not exceed more than 20% of the available nodes on the partition. 
   + The SLURM script should next create a temporary working directory for this job, navigate into this directory, and copy all files needed to execute this job over from your home directory into this new working directory.
