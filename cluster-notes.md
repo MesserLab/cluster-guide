@@ -7,9 +7,9 @@ Messer lab cluster tutorial
   cluster etiquette</a>
 - <a href="#running-slim-on-the-cluster"
   id="toc-running-slim-on-the-cluster">Running SLiM on the cluster</a>
-- <a href="#using-jupyter-notebook-on-cluster-for-macs-see-jupytersh"
-  id="toc-using-jupyter-notebook-on-cluster-for-macs-see-jupytersh">Using
-  Jupyter Notebook on cluster, for Macs (see jupyter.sh)</a>
+- <a href="#using-jupyter-notebook-on-cluster-for-macs"
+  id="toc-using-jupyter-notebook-on-cluster-for-macs">Using Jupyter
+  Notebook on cluster (for Macs)</a>
 
 ## Resources
 
@@ -143,7 +143,10 @@ cat slim-example/gen_params.py
 
 If you have any questions about this pipeline, talk to Sam or Isabel.
 
-## Using Jupyter Notebook on cluster, for Macs (see [jupyter.sh](jupyter.sh))
+## Using Jupyter Notebook on cluster (for Macs)
+
+To run Jupyter notebook, we’ll use the [jupyter.sh](jupyter.sh) SLURM
+script, written by Siddharth.
 
 1.  Potential changes you might want to make to [jupyter.sh](jupyter.sh)
     before running:
@@ -185,7 +188,9 @@ If you have any questions about this pipeline, talk to Sam or Isabel.
 
 Some notes:
 
-The given `sbatch` file assigns a week or more of resources for the
-notebook. If you don’t plan on using the Jupyter notebook any longer,
-remember to scancel the job (you can view the job number using the
-squeue command and then do `scancel JOB_NUMBER`).
+- The given `sbatch` file assigns a week or more of resources for the
+  notebook. If you don’t plan on using the Jupyter notebook any longer,
+  remember to scancel the job (you can view the job number using the
+  squeue command and then do `scancel JOB_NUMBER`).
+
+- If you have any questions about this, talk to Meera.
