@@ -65,9 +65,9 @@ cat slim-example/gen_params.py
 
 If you have any questions about this pipeline, talk to Sam or Isabel.
 
-## Using Jupyter Notebook on cluster, for Macs (see `jupyter.sh`)
+## Using Jupyter Notebook on cluster, for Macs (see [jupyter.sh](jupyter.sh))
 
-1. Potential changes you might want to make to `jupyter.sh` before running:
+1. Potential changes you might want to make to [jupyter.sh](jupyter.sh) before running:
   * If you would like to run Jupyter lab instead of Jupyter notebook, replace ‘notebook’ with ‘lab’ in the SLURM script
   * You will only have access to the Jupyter notebook while this SLURM script is running. Thus, the job partition should reflect the amount of time you want to run the notebook for. See the `cluster-partition.png` figure above to decide which partition to request, and then change the partition header to this. For example, I'd do `#SBATCH --partition regular` if I want less than 24 hours. 
   * The default memory requirement is 4G. If you need more or less than this, change this header. 
