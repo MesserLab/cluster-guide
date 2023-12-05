@@ -35,7 +35,7 @@ Cluster members find it extremely annoying when one person is taking *all* slots
 
 * To vary parameters in SLiM, parse SLiM output, and save your desired summary statistics, you can follow Sam's pipeline:
 
-1. Copy and paste Sam's `defineCfgParam` function into your SLiM script (see `distant_site_pan_TA.slim`):
+1. Copy and paste Sam's `defineCfgParam` function into your SLiM script (see [distant_site_pan_TA.slim](slim-example/distant_site_pan_TA.slim)):
 ```{r}
 knitr::include_graphics("figures/defineCfgParam.png")
 ```
