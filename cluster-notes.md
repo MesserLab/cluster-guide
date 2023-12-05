@@ -77,7 +77,7 @@ knitr::include_graphics("figures/defineCfgParam.png")
   the generation count and the drive allele frequency at the `late()`
   stage of each tick.
 
-2.  Create a Python driver (ex: `python-driver.py`)
+2.  Create a Python driver (ex: [python-driver.py](slim-example/python-driver.py))
 
 - This script should that use an
   [ArgumentParser](https://docs.python.org/3/library/argparse.html) to
@@ -90,13 +90,13 @@ knitr::include_graphics("figures/defineCfgParam.png")
   statistics.
 
 3.  Create a text file where each line corresponds to 1 call of your
-    Python driver (ex: `params.txt`)
+    Python driver (ex: [params.txt](slim-example/params.txt))
 
 - You can create a text file like this using for-loops in Python or R.
   If I wanted to vary the embryo resistance rate and the germline
   resistance rate on the cluster, for example, I could make a text file
   with these commands using the following Python code (see
-  `gen_params.py`):
+  [gen_params.py](slim-example/gen_params.py)):
 
 ``` bash
 cat slim-example/gen_params.py
@@ -112,7 +112,7 @@ cat slim-example/gen_params.py
     ##         print(f"python python-driver.py -src distant_site_pan_TA.slim -nreps 10 -embryo_res {embryo_res:.3f} -germline_res {germline_res:.3f}")
     ## 
 
-4.  Lastly, create a SLURM script (see `slurm-script.sh`).
+4.  Lastly, create a SLURM script (see [slurm-script.sh](slim-example/slurm-script.sh)).
 
 - This should start with headers that specify the memory requirements of
   your job, the job partition you want (which depends on how long you
@@ -141,9 +141,9 @@ cat slim-example/gen_params.py
 
 If you have any questions about this pipeline, talk to Sam or Isabel.
 
-## Using Jupyter Notebook on cluster, for Macs (see `jupyter.sh`)
+## Using Jupyter Notebook on cluster, for Macs (see [jupyter.sh](jupyter.sh))
 
-1.  Potential changes you might want to make to `jupyter.sh` before
+1.  Potential changes you might want to make to [jupyter.sh](jupyter.sh) before
     running:
 
 - If you would like to run Jupyter lab instead of Jupyter notebook,
