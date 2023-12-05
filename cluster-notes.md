@@ -51,7 +51,8 @@ one day (ex: holidays) or if your jobs are extremely quick.
   summary statistics, you can follow Sam’s pipeline:
 
 1.  Copy and paste Sam’s `defineCfgParam` function into your SLiM script
-    (see `distant_site_pan_TA.slim`):
+    (see
+    [distant_site_pan_TA.slim](slim-example/distant_site_pan_TA.slim)):
 
 ``` r
 knitr::include_graphics("figures/defineCfgParam.png")
