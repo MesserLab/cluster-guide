@@ -9,7 +9,7 @@ Messer lab cluster tutorial
   id="toc-running-slim-on-the-cluster">Running SLiM on the cluster</a>
 - <a href="#using-jupyter-notebook-on-cluster-for-macs-see-jupytersh"
   id="toc-using-jupyter-notebook-on-cluster-for-macs-see-jupytersh">Using
-  Jupyter Notebook on cluster, for Macs (see <code>jupyter.sh</code>)</a>
+  Jupyter Notebook on cluster, for Macs (see jupyter.sh)</a>
 
 ## Resources
 
@@ -77,17 +77,18 @@ knitr::include_graphics("figures/defineCfgParam.png")
   the generation count and the drive allele frequency at the `late()`
   stage of each tick.
 
-2.  Create a Python driver (ex: [python-driver.py](slim-example/python-driver.py))
+2.  Create a Python driver (ex:
+    [python-driver.py](slim-example/python-driver.py))
 
 - This script should that use an
   [ArgumentParser](https://docs.python.org/3/library/argparse.html) to
   handle command line arguments, such as the parameters you want to vary
   in SLiM and any other variables that may change, like the number of
   replicates to run or the name of the SLiM file you want to use.
-- This script will import functions from Sam’s `slimutil.py` script to
-  run SLiM with these command line arguments, then parse the output
-  written to the SLiM console and print out your desired summary
-  statistics.
+- This script will import functions from Sam’s
+  [slimutil.py](slim-example/slimutil.py) script to run SLiM with these
+  command line arguments, then parse the output written to the SLiM
+  console and print out your desired summary statistics.
 
 3.  Create a text file where each line corresponds to 1 call of your
     Python driver (ex: [params.txt](slim-example/params.txt))
@@ -112,7 +113,8 @@ cat slim-example/gen_params.py
     ##         print(f"python python-driver.py -src distant_site_pan_TA.slim -nreps 10 -embryo_res {embryo_res:.3f} -germline_res {germline_res:.3f}")
     ## 
 
-4.  Lastly, create a SLURM script (see [slurm-script.sh](slim-example/slurm-script.sh)).
+4.  Lastly, create a SLURM script (see
+    [slurm-script.sh](slim-example/slurm-script.sh)).
 
 - This should start with headers that specify the memory requirements of
   your job, the job partition you want (which depends on how long you
@@ -143,8 +145,8 @@ If you have any questions about this pipeline, talk to Sam or Isabel.
 
 ## Using Jupyter Notebook on cluster, for Macs (see [jupyter.sh](jupyter.sh))
 
-1.  Potential changes you might want to make to [jupyter.sh](jupyter.sh) before
-    running:
+1.  Potential changes you might want to make to [jupyter.sh](jupyter.sh)
+    before running:
 
 - If you would like to run Jupyter lab instead of Jupyter notebook,
   replace ‘notebook’ with ‘lab’ in the SLURM script
@@ -154,35 +156,36 @@ If you have any questions about this pipeline, talk to Sam or Isabel.
   `cluster-partition.png` figure above to decide which partition to
   request, and then change the partition header to this. For example,
   I’d do `#SBATCH --partition regular` if I want less than 24 hours.
+- The default memory requirement is 4G. If you need more or less than
+  this, change this header.
 
 2.  Navigate to the directory where files you want to access on your
     notebook are located
 
 3.  Run `sbatch $PATH_TO_DIRECTORY/jupyter.sh`, where
-    `PATH_TO_DIRECTORY` is the path to where this script is stored.
+    `PATH_TO_DIRECTORY` is the folder where `jupyter.sh` is stored.
 
-4.  Access (using cat) logfile in the current working directory with a
-    name that resembles jupyter_notebook.\*.log
+4.  Print (using `cat`) the logfile in the current working directory
+    with a name that resembles jupyter_notebook.\*.log
 
 5.  On a different local terminal window, run the ssh line provided in
-    the logfile, this will create an ssh tunnel that will allow you to
+    the logfile. This will create an `ssh` tunnel that will allow you to
     open the jupyter notebook on your local browser. The command will
     look something like:
     `ssh -L 8877:cbsubscb02:8877 mnc42@cbsubscb02.biohpc.cornell.edu`
 
-6.  If you’re off-campus, you’ll need to connect to the VPN for this
-    step.
+- If you’re off-campus, you’ll need to connect to the VPN for this step.
 
-7.  Next, find the link to your jupyter notebook on your logfile (might
+6.  Next, find the link to your Jupyter notebook on your logfile (might
     take a minute or two). It will be after the sentence: ‘copy and
     paste one of these URLs:’
 
-8.  As they said, copy and paste one of the URLs onto your browser, and
+7.  As they said, copy and paste one of the URLs onto your browser, and
     you’re good to go.
 
 Some notes:
 
-The given sbatch file assigns a week or more of resources for the
-notebook. If you don’t plan on using the jupyter notebook any longer,
+The given `sbatch` file assigns a week or more of resources for the
+notebook. If you don’t plan on using the Jupyter notebook any longer,
 remember to scancel the job (you can view the job number using the
-squeue command.
+squeue command and then do `scancel JOB_NUMBER`).
