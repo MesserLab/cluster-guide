@@ -7,6 +7,9 @@ Messer lab cluster tutorial
   cluster etiquette</a>
 - <a href="#running-slim-on-the-cluster"
   id="toc-running-slim-on-the-cluster">Running SLiM on the cluster</a>
+- <a href="#using-jupyter-notebook-on-cluster-for-macs-see-jupytersh"
+  id="toc-using-jupyter-notebook-on-cluster-for-macs-see-jupytersh">Using
+  Jupyter Notebook on cluster, for Macs (see <code>jupyter.sh</code>)</a>
 
 ## Resources
 
@@ -45,22 +48,141 @@ one day (ex: holidays) or if your jobs are extremely quick.
 
 - Multiple versions of SLiM are available on the cluster. [This
   page](https://biohpc.cornell.edu/lab/userguide.aspx?a=software&i=411#c)
-  provides the commands for 5 different SLiM versions.
+  provides the commands for 5 different versions.
 
 - To vary parameters in SLiM, parse SLiM output, and save your desired
   summary statistics, you can follow Sam’s pipeline:
 
-1.  Copy and paste Sam’s `defineCfgParam` function into your SLiM script
-    (see
-    [distant_site_pan_TA.slim](slim-example/distant_site_pan_TA.slim)):
+1.  Edit your SLiM file.
+
+- Copy and paste Sam’s `defineCfgParam` function into your SLiM script
+  (see
+  [distant_site_pan_TA.slim](slim-example/distant_site_pan_TA.slim)):
 
 ``` r
 knitr::include_graphics("figures/defineCfgParam.png")
 ```
 
-<img src="figures/defineCfgParam.png" width="1278" /> In your SLiM
-`initialize()` callback, define any parameter that you want to vary with
-`defineCfgParam("PARAMETER_NAME", DEFAULT_VALUE)`. For example, if I
-wanted to vary the germline resistance rate in a gene drive model but
-have a default value of 0.9, I’d do
-`defineCfgParam("GERMLINE_RESISTANCE_RATE", 0.9)`.
+<img src="figures/defineCfgParam.png" width="1278" />
+
+- In your SLiM `initialize()` callback, define any parameter that you
+  want to vary with `defineCfgParam("PARAMETER_NAME", DEFAULT_VALUE);`.
+  For example, if I wanted to vary the germline resistance rate in a
+  gene drive model with a default value of 0.9, I’d do
+  `defineCfgParam("GERMLINE_RESISTANCE_RATE", 0.9);`.
+
+- Also make sure that you are printing your desired output to the SLiM
+  console. For example, if I want to analyze a gene drive’s trajectory
+  during the course of the simulation, I’d probably want to print out
+  the generation count and the drive allele frequency at the `late()`
+  stage of each tick.
+
+2.  Create a Python driver (ex: `python-driver.py`)
+
+- This script should that use an
+  [ArgumentParser](https://docs.python.org/3/library/argparse.html) to
+  handle command line arguments, such as the parameters you want to vary
+  in SLiM and any other variables that may change, like the number of
+  replicates to run or the name of the SLiM file you want to use.
+- This script will import functions from Sam’s `slimutil.py` script to
+  run SLiM with these command line arguments, then parse the output
+  written to the SLiM console and print out your desired summary
+  statistics.
+
+3.  Create a text file where each line corresponds to 1 call of your
+    Python driver (ex: `params.txt`)
+
+- You can create a text file like this using for-loops in Python or R.
+  If I wanted to vary the embryo resistance rate and the germline
+  resistance rate on the cluster, for example, I could make a text file
+  with these commands using the following Python code (see
+  `gen_params.py`):
+
+``` bash
+cat slim-example/gen_params.py
+```
+
+    ## # pipe this output to a text file you'll use for the cluster run
+    ## # ex: python gen_params.py > params.txt
+    ## 
+    ## from numpy import arange
+    ## 
+    ## for embryo_res in arange(0.0, 0.25, 0.05):
+    ##     for germline_res in arange(0.75, 1.01, 0.05):
+    ##         print(f"python python-driver.py -src distant_site_pan_TA.slim -nreps 10 -embryo_res {embryo_res:.3f} -germline_res {germline_res:.3f}")
+    ## 
+
+4.  Lastly, create a SLURM script (see `slurm-script.sh`).
+
+- This should start with headers that specify the memory requirements of
+  your job, the job partition you want (which depends on how long you
+  think the job will take), a name for your job, a name for your job’s
+  output (for standard error messages), and the length of the job array
+  (optional).
+  - You can use a job array to execute many lines of your text file
+    simultaneously. The notation for this is
+    `#SBATCH --array=1-<ARRAY_LENGTH>%<MAX_JOBS_AT_A_TIME>`. The
+    `ARRAY_LENGTH` corresponds to the number of lines in my text file,
+    ie the number of times I’m running the Python driver. The
+    `MAX_JOBS_AT_A_TIME` controls how many jobs I can execute
+    simultaneously. See **cluster etiquette** — `MAX_JOBS_AT_A_TIME`
+    should not exceed more than 20% of the available nodes on the
+    partition.
+- The SLURM script should next create a temporary working directory for
+  this job, navigate into this directory, and copy all files needed to
+  execute this job over from your home directory into this new working
+  directory.
+- Next, add the version of SLiM you want to use to your path.
+- Then, you can run the line of your text file located at row
+  `SLURM_ARRAY_TASK_ID` using the `sed` command. Pipe the output of your
+  Python script to an output file, and then copy this over to your home
+  directory.
+- Lastly, clean up the working directory by deleting all files.
+
+If you have any questions about this pipeline, talk to Sam or Isabel.
+
+## Using Jupyter Notebook on cluster, for Macs (see `jupyter.sh`)
+
+1.  Potential changes you might want to make to `jupyter.sh` before
+    running:
+
+- If you would like to run Jupyter lab instead of Jupyter notebook,
+  replace ‘notebook’ with ‘lab’ in the SLURM script
+- You will only have access to the Jupyter notebook while this SLURM
+  script is running. Thus, the job partition should reflect the amount
+  of time you want to run the notebook for. See the
+  `cluster-partition.png` figure above to decide which partition to
+  request, and then change the partition header to this. For example,
+  I’d do `#SBATCH --partition regular` if I want less than 24 hours.
+
+2.  Navigate to the directory where files you want to access on your
+    notebook are located
+
+3.  Run `sbatch $PATH_TO_DIRECTORY/jupyter.sh`, where
+    `PATH_TO_DIRECTORY` is the path to where this script is stored.
+
+4.  Access (using cat) logfile in the current working directory with a
+    name that resembles jupyter_notebook.\*.log
+
+5.  On a different local terminal window, run the ssh line provided in
+    the logfile, this will create an ssh tunnel that will allow you to
+    open the jupyter notebook on your local browser. The command will
+    look something like:
+    `ssh -L 8877:cbsubscb02:8877 mnc42@cbsubscb02.biohpc.cornell.edu`
+
+6.  If you’re off-campus, you’ll need to connect to the VPN for this
+    step.
+
+7.  Next, find the link to your jupyter notebook on your logfile (might
+    take a minute or two). It will be after the sentence: ‘copy and
+    paste one of these URLs:’
+
+8.  As they said, copy and paste one of the URLs onto your browser, and
+    you’re good to go.
+
+Some notes:
+
+The given sbatch file assigns a week or more of resources for the
+notebook. If you don’t plan on using the jupyter notebook any longer,
+remember to scancel the job (you can view the job number using the
+squeue command.
