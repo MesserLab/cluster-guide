@@ -71,7 +71,7 @@ To run Jupyter notebook, we'll use the [jupyter.sh](jupyter.sh) SLURM script, wr
 
 1. Potential changes you might want to make to [jupyter.sh](jupyter.sh) before running:
   * If you would like to run Jupyter lab instead of Jupyter notebook, replace ‘notebook’ with ‘lab’ in the SLURM script
-  * You will only have access to the Jupyter notebook while this SLURM script is running. Thus, the job partition should reflect the amount of time you want to run the notebook for. See the `cluster-partition.png` figure above to decide which partition to request, and then change the partition header to this. For example, I'd do `#SBATCH --partition regular` if I want less than 24 hours. 
+  * You will only have access to the Jupyter notebook while this SLURM script is running. Thus, the job partition should reflect the amount of time you want to run the notebook for. See the `cluster-partition.png` figure above to decide which partition to request, and then change the partition header to this. But note that if you plan to keep coming back to this notebook for, say, a week, it might make more sense to use the `long7` partition and then `ssh` back to this each time you want to use it for the week.
   * The default memory requirement is 4G. If you need more or less than this, change this header. 
 
 2. Navigate to the directory where files you want to access on your notebook are located
@@ -93,8 +93,38 @@ Some notes:
 
 * If you have any questions about this, talk to Meera.
 
+## Conda environments
 
+* conda environments are useful when your job requires multiple packages that are not already installed on the cluster. I often use a conda environment when my Python driver imports a lot of packages
+  + For more on conda environments, see the [conda webpage](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#activating-an-environment)  or other [online resources](https://edcarp.github.io/introduction-to-conda-for-data-scientists/02-working-with-environments/index.html)
+  
+* BioHPC recommends installing conda onto your home directory. They provide instructions [here](https://biohpc.cornell.edu/lab/userguide.aspx?a=software&i=574#c)
 
+* You can create a conda environment by logging into your cluster node and then doing `conda create --name environment_name`. You can ensure that your environment uses a specific version of Python, like version 3.9, with `conda create -n myenv python=3.9`
+
+* You can then activate your environment with `conda activate environment_name`. 
+
+* From this environment, you can install specific versions of packages with commands like `conda install scipy=0.15.0 curl=7.26.0`
+
+* You can deactivate your conda environment with `conda deactivate`
+
+* To use your conda environment in a SLURM script, you'd just need to activate it before you run your program (or call the Python driver in the SLiM example above) and deactivate it afterwards.
+
+ex:
+```{r}
+knitr::include_graphics("figures/conda-env-in-slurm-script.png")
+```
+
+If you have questions about conda environments, talk to Mitch or Isabel
+
+## Docker
+
+* BioHPC is encouraging users to use Docker rather than conda environments. Docker is a way to create a virtual machine with all your desired packages/programs that you can use any time in the future or send to others to use. 
+* Resources:
+  + [Online tutorial](https://docker-curriculum.com/)
+  + [BioHPC Docker quick-start guide](https://biohpc.cornell.edu/lab/doc/docker_quick_start.pdf)
+  + [BioHPC workshop on using Docker](https://biohpc.cornell.edu/ww/1/Default.aspx?wid=147)
+  + [More BioHPC notes](https://biohpc.cornell.edu/lab/userguide.aspx?a=software&i=340#c)
 
   
 
